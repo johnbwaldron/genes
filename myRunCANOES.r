@@ -1,6 +1,6 @@
 #Rterm.exe --vanilla
 #install.packages(c("nnls", "Hmisc", "mgcv", "plyr"))
-# Not necessary to load the libraries?
+# Not necessary to load the libraries because their loaded in the CANOES.R functions
 #library("nnls")
 #library("Hmisc")
 #library("mgcv")
@@ -15,7 +15,7 @@ canoes.reads <- read.table("https://raw.githubusercontent.com/johnbwaldron/genes
 canoes.reads <- canoes.reads[,-4]
 
 #rename columns 5 and onward with sample names:
-sample.names <- paste("WES_GELCC", seq(105:110), sep="") #just made up
+sample.names <- paste("WES_GELCC", c(105:110), sep="") #just made up
 names(canoes.reads) <- c("chromosome", "start", "end", sample.names)
 
 #create a vector of consecutive target/probe ids
