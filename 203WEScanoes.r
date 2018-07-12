@@ -9,6 +9,7 @@
 #Read in the gc content per probe/capture oligos (do you call them probes when their in solution and tagged with beads?
 gc <- read.table("https://raw.githubusercontent.com/johnbwaldron/genes/master/lungcancerwes81616.gc.txt")$V2
 canoes.reads <- read.table("https://raw.githubusercontent.com/johnbwaldron/genes/master/WES_GELCC105.canoes.reads.txt")
+C:\Users\4wald\Documents
 
 #for whatever reason coming out of bedtools, our canoes.reads.txt column 4 is full of "." 
 # so I need to delete those (which is done in unix in the existining pipeline). 
