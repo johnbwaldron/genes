@@ -1,6 +1,6 @@
 #Rterm.exe --vanilla
 #install.packages(c("nnls", "Hmisc", "mgcv", "plyr"))
-# Not necessary to load the libraries because their loaded in the CANOES.R functions
+# Not necessary to load the libraries because they're loaded in the CANOES.R functions
 #library("nnls")
 #library("Hmisc")
 #library("mgcv")
