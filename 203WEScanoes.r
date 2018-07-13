@@ -5,6 +5,8 @@
 #library("Hmisc")
 #library("mgcv")
 #library("plyr")
+#install.packages("tidyverse")
+#library("tidyverse")
 
 #Read in the gc content per probe/capture oligos (do you call them probes when their in solution and tagged with beads?
 gc <- read.table("https://raw.githubusercontent.com/johnbwaldron/genes/master/lungcancerwes81616.gc.txt")$V2
@@ -16,7 +18,10 @@ canoes.reads <- read.table("C:/Users/4wald/Documents/203samples_canoes.reads.txt
 canoes.reads <- canoes.reads[,-4]
 
 #rename columns 5 and onward with sample names:
-sample.names <- paste("WES_GELCC", c(105:110), sep="") #just made up
+# bam name only in CANOES run order found here: "https://raw.githubusercontent.com/johnbwaldron/genes/master/bamNameOnly.tsv"
+sample.names <- read.table("https://raw.githubusercontent.com/johnbwaldron/genes/master/bamNameOnly.tsv", row.names="V1")
+sample.names <- rownames(sample.names)
+#sample.names <- paste("WES_GELCC", c(105:110), sep="") #just made up
 names(canoes.reads) <- c("chromosome", "start", "end", sample.names)
 
 #create a vector of consecutive target/probe ids
