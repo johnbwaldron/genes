@@ -45,3 +45,50 @@ for (i in 1:length(sample.names)){
 xcnvs <- do.call('rbind', xcnv.list)
 
 write.table(xcnvs, file="C:/Users/Public/xcnvs.csv", row.names=FALSE, quote=TRUE, sep=",")
+
+# genotype all the CNV calls made above in samples
+#HAVEN'T TRIED THIS YET
+#for loop to create list of dataframes, one for each sample of genotype data.
+for (i in 1:length(sample.names)){
+genotyping.list[[i]] <- GenotypeCNVs(xcnvs, i, canoes.reads)
+}
+
+# GenotypeCNVs
+#     Genotype CNVs in sample of interest
+# Arguments:
+#   xcnv
+#     data frame with the following columns, and one row for each
+#     CNV to genotype
+#      INTERVAL: CNV coordinates in the form chr:start-stop
+#      TARGETS: target numbers of CNV in the form start..stop
+#               these should correspond to the target numbers in counts
+#   sample.name:
+#     sample to genotype CNVs in (should correspond to a column in counts)
+#   counts: 
+#     count matrix, first five columns should be 
+#       target: consecutive numbers for targets (integer)
+#       chromosome: chromosome number (integer-valued) 
+#         (support for sex chromosomes to come)
+#       start: start position of probe (integer)
+#       end: end position of probe (integer)
+#       gc: gc content (real between 0 and 1)
+#       subsequent columns should include counts for each probe for samples
+#   p:
+#     average rate of occurrence of CNVs (real) default is 1e-08
+#   D:
+#     expected distance between targets in a CNV (integer) default is 70,000
+#   Tnum:
+#     expected number of targets in a CNV (integer) default is 6
+#   numrefs
+#     maximum number of reference samples to use (integer) default is 30
+#     the weighted variance calculations will take a long time if too 
+#     many reference samples are used
+#   emission.probs and distances are for internal use only
+# Returns: 
+#   data frame with the following columns and one row for each genotyped CNV:
+#      INTERVAL: CNV coordinates in the form chr:start-stop
+#      NQDEL: a Phred-scaled quality score that sample.name has no deletion 
+#             in the interval
+#      SQDEL: a Phred-scaled quality score that sample.name has a deletion 
+#             in the interval
+#      NQDUP and SQDUP: same, but for a duplication
