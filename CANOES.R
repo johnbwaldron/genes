@@ -329,6 +329,7 @@ GenotypeCNVs <- function(xcnvs, sample.name, counts, p=1e-08, Tnum=6,
   cnv.intervals <- as.character(xcnvs$INTERVAL)
   # if no emission probs matrix is passed in, generate a new one
   if (is.null(emission.probs)){
+    cat("no emission probability matrix passed in, generating a new one\n")
     l <- CallCNVs(sample.name, counts, p, Tnum=6, D=70000, numrefs=30, get.dfs=T)
     emission.probs <- l[['emission.probs']]
     distances <- l[['distances']]
@@ -339,6 +340,7 @@ GenotypeCNVs <- function(xcnvs, sample.name, counts, p=1e-08, Tnum=6,
                       dimnames=list(cnv.intervals, 
                                     c("INTERVAL", "NQDel", "SQDel", "NQDup", "SQDup")))
   for (i in 1:num.cnvs){
+    cat("calculating genotype probabilities in ", i, " of ", num.cnvs," CNVs\n")
     interval <- as.character(xcnvs[i, "INTERVAL"])
     targets <- as.numeric(strsplit(as.character(xcnvs[i, "TARGETS"]), ".", fixed=T)[[1]][c(1,3)])
     left.target <- targets[1]
