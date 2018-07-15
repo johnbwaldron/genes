@@ -44,8 +44,20 @@ for (i in 1:length(sample.names)){
 # combine the results into one data frame
 xcnvs <- do.call('rbind', xcnv.list)
 
-write.table(xcnvs, file="C:/Users/Public/xcnvs.csv", row.names=FALSE, quote=TRUE, sep=",")
+####################################################FOR FIGURING OUT GENOTYPING########################################################
+#write.table(xcnvs, file="C:/Users/Public/xcnvs.csv", row.names=FALSE, quote=TRUE, sep=",")
+#write.table(canoes.reads, file="C:/Users/Public/canoesReads.csv", row.names=FALSE, quote=TRUE, sep=",")
+xcnvs <- read.table(file="C:/Users/Public/xcnvs.csv",  header = TRUE, sep=",")
+canoes.reads <- read.table(file="C:/Users/Public/canoesReads.csv",  header = TRUE, sep=",")
+counts <- subset(canoes.reads, !chromosome %in% c("chrX", "chrY", "X", "Y"))
+source("https://raw.githubusercontent.com/johnbwaldron/genes/master/CANOES.R")
+i<-2
+genotypesBySample <- GenotypeCNVs(xcnvs, colnames(counts)[-c(1:5)][i], counts)
+########################################################################################################################################
+
+##########################Rather than reformatting canoes.reads each time, just load it below###########################
 #xcnvs <- read.table(file="C:/Users/Public/xcnvs.csv",  header = TRUE, sep=",")
+#canoes.reads <- read.table(file="C:/Users/Public/canoesReads.csv",  header = TRUE, sep=",")
 # genotype all the CNV calls made above in samples
     # rather than append all CNVs for each sample to single file, I think I'll create a file for each genotyped cnv. 
     # with that goal in mind, there is no need to create the list, it makes sense to me to directly write the file with wach sample
