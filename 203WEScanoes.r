@@ -45,13 +45,18 @@ for (i in 1:length(sample.names)){
 xcnvs <- do.call('rbind', xcnv.list)
 
 write.table(xcnvs, file="C:/Users/Public/xcnvs.csv", row.names=FALSE, quote=TRUE, sep=",")
-
+#xcnvs <- read.table(file="C:/Users/Public/xcnvs.csv",  header = TRUE, sep=",")
 # genotype all the CNV calls made above in samples
-#HAVEN'T TRIED THIS YET
-#for loop to create list of dataframes, one for each sample of genotype data.
+    # rather than append all CNVs for each sample to single file, I think I'll create a file for each genotyped cnv. 
+    # with that goal in mind, there is no need to create the list, it makes sense to me to directly write the file with wach sample
+    #dir.create("C:/Users/Public/GELCCgenotypes/")
+
 for (i in 1:length(sample.names)){
-genotyping.list[[i]] <- GenotypeCNVs(xcnvs, i, canoes.reads)
-}
+    genotypesBySample <- GenotypeCNVs(xcnvs, sample.names[i], canoes.reads)
+
+    write.table(genotypesBySample, file=paste("C:/Users/Public/GELCCgenotypes/", sample.names[i], "Genotypes.csv", sep=""), row.names=FALSE, quote=TRUE, sep=",")
+    cat("completed ", i, " of ", length(sample.names),"\n")
+    }
 
 # GenotypeCNVs
 #     Genotype CNVs in sample of interest
