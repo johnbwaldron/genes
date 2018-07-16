@@ -51,7 +51,7 @@ xcnvs <- read.table(file="C:/Users/Public/xcnvs.csv",  header = TRUE, sep=",")
 canoes.reads <- read.table(file="C:/Users/Public/canoesReads.csv",  header = TRUE, sep=",")
 counts <- subset(canoes.reads, !chromosome %in% c("chrX", "chrY", "X", "Y"))
 source("https://raw.githubusercontent.com/johnbwaldron/genes/master/CANOES.R")
-i<-2
+#i<-2
 genotypesBySample <- GenotypeCNVs(xcnvs, colnames(counts)[-c(1:5)][i], counts)
 ########################################################################################################################################
 
@@ -62,9 +62,11 @@ genotypesBySample <- GenotypeCNVs(xcnvs, colnames(counts)[-c(1:5)][i], counts)
     # rather than append all CNVs for each sample to single file, I think I'll create a file for each genotyped cnv. 
     # with that goal in mind, there is no need to create the list, it makes sense to me to directly write the file with wach sample
     #dir.create("C:/Users/Public/GELCCgenotypes/")
-
-for (i in 1:length(sample.names)){
-    genotypesBySample <- GenotypeCNVs(xcnvs, sample.names[i], canoes.reads)
+# for loop genotypeCNVs, but limit the xcnvs to one sample at a time.
+sample.names <- colnames(counts)[-c(1:5)])
+for (i in 1:length(sample.names){
+    CNVs <- subset(xcnvs, SAMPLE %in% sample.names[i])
+    genotypesBySample <- GenotypeCNVs(CNVs, sample.names[i], canoes.reads)
 
     write.table(genotypesBySample, file=paste("C:/Users/Public/GELCCgenotypes/", sample.names[i], "Genotypes.csv", sep=""), row.names=FALSE, quote=TRUE, sep=",")
     cat("completed ", i, " of ", length(sample.names),"\n")
