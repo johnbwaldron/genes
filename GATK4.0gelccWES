@@ -1,0 +1,28 @@
+
+######################################PREPROCESSING#############################################################
+# I think it worthwhile to update the alignments and recalibrate the quality scores. 
+# Along with this preprocessing, it's probably worth processing (and padding) the interval list (bed) too.
+  To do:    
+    update alignments to more recent genome release (gatk RevertSam)
+    Map to Reference (BWA, MergeBamAlignments)
+    Mark Duplicates and Sort (MarkDuplicates, SortSam)
+    Quality Score Recalibration (BaseRecalibrator, Apply Recalibration, AnalyzeCovariates)
+  ######################################PREPROCESSING#############################################################
+#~/disk_big/gatk-4.0.6.0$ ./gatk 
+######################################PROCESSING#############################################################
+    #read counts
+    ./gatk CollectReadCounts \
+          -I /home/BIO/johnw/disk_big/Mandal_project/GELCC_WES_RAW_Data/2_GELCC_bam_files/0110663a349e483d985fa10e0f96108b.bam \
+          -L intervals.interval_list \
+          --interval-merging-rule OVERLAPPING_ONLY \
+          -O sample.counts.hdf5
+          
+                
+          
+          
+          
+          
+          
+          
+          
+          media/tarun/My Book$ sudo scp -r GELCC_WES_RAW_Data/* tarun@155.58.220.250:/home/BIO/tarun/disk_big/Manda_project
