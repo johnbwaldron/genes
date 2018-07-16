@@ -13,9 +13,9 @@
     #read counts
     ./gatk CollectReadCounts \
           -I /home/BIO/johnw/disk_big/Mandal_project/GELCC_WES_RAW_Data/2_GELCC_bam_files/0110663a349e483d985fa10e0f96108b.bam \
-          -L intervals.interval_list \
+          -L /home/BIO/tarun/disk_big/Mandal_project/S04380219_Padded.bed \
           --interval-merging-rule OVERLAPPING_ONLY \
-          -O sample.counts.hdf5
+          -O /home/BIO/johnw/disk_big/Mandal_project/GELCC_WES_RAW_Data/WESGATKout/sample.counts.hdf5
           
                 
           
@@ -23,6 +23,10 @@
           
           
           
-          
-          
-          media/tarun/My Book$ sudo scp -r GELCC_WES_RAW_Data/* tarun@155.58.220.250:/home/BIO/tarun/disk_big/Manda_project
+Linux Commands for copying files to server:        
+  media/tarun/My Book$ sudo scp -r GELCC_WES_RAW_Data/* tarun@155.58.220.250:/home/BIO/tarun/disk_big/Mandal_project
+
+  sudo scp -r /media/tarun/My\ Book/GELCC_WES_RAW_Data johnw@155.58.220.250:/home/BIO/johnw/disk_big/Mandal_project
+  
+  sudo scp /home/BIO/tarun/Downloads/S04380219_Padded.bed tarun@155.58.220.250:/home/BIO/tarun/disk_big/Mandal_project
+  
