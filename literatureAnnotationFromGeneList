@@ -1,0 +1,97 @@
+ #Rterm.exe --vanilla
+ #install.packages("reutils") ?????????
+ #install.packages("data.table")
+ #install.packages("RCurl")
+ # I've chosen to use reutils because it appears to actually be available
+ # source(file="address")
+
+library("reutils")
+library("data.table")
+library("biomaRt")
+library(XML)
+
+#OMIM API Key: VkZb22y6QemoVVICZtmiCQ
+#NCBI API key = 22ed0236ef0c7f3ca8ddd4c5595b88c21109      
+###########################################################
+#Goal create annotation table with cols: "gene", "entrezGeneSummary", "number of pubmed results with gene", "Number pubmed results with gene AND cancer", "Titles pubmed gene AND cancer"
+#PUBMED SEARCH
+#
+################################################################################
+#I've stored the gene list on github, so that it can be read from any computer without worrying about the file path. I think this will prove to be helpful in the future.
+# to get the path to the file once it is stored in a GitHub repository, click the file and the tab that says "raw". The URL for the "raw" file is the path to pass to r (fread in the data.table package works well.)
+
+list <- fread("https://raw.githubusercontent.com/johnbwaldron/genes/master/GENELIST_FOR_ANNOTATIONS.txt", col.names=c("genes"), header=FALSE)
+
+#esearch a database to acquire UIDs --> LIST DATABASES: einfo()
+for(i in list$genes){
+    gid <- esearch(paste(paste(i,"[GENE]", sep=""), "human[ORGN]", sep=" AND "), db = "gene")
+    s <- esummary(uid(gid), db = "gene")
+    entrezGeneSummary <- content(s, "parsed")$Summary
+    dex = which(list$genes==i)
+    list[dex,"Summary"]<- entrezGeneSummary
+    
+    # pubmeds with gene 
+        numb <- esearch(i, db = "pubmed", rettype = "count", field = NULL)
+        list[dex,"pubmed.gene"] <- content(numb, "parsed")
+    
+    # pubmeds with gene AND cancer
+        numb <- esearch(paste(i, "cancer", sep=" AND "), db = "pubmed", rettype = "count")   
+        list[dex,"pubmed.cancerGene"] <- content(numb, "parsed")
+        
+    # pubmeds with gene AND cancer AND prostate
+        numb <- esearch(paste(i, "cancer", "(prostate OR prostatic)", sep=" AND "), db = "pubmed", rettype = "count")
+        list[dex,"pubmed.prostateCancerGene"] <- content(numb, "parsed")
+    
+    # NOW ADD TITLES FROM PUBMED FOR prostateCancerGene or then geneCancer or then gene IF > 0
+        # search query format: (GSTM1) AND cancer AND ("2018"[Date - Publication] : "3000"[Date - Publication]) 
+        #dateRange = paste('(2017[Date - Publication] : 3000[Date - Publication])')
+            dateRange = ""
+        if(list[dex,"pubmed.prostateCancerGene"]>1){   
+           pmid <- esearch(paste(i, "cancer", "(prostate OR prostatic)", dateRange, sep=" AND "), retmax = 5, db = "pubmed", rettype = "uilist")
+            s <- esummary(uid(pmid), db = "pubmed")
+            pmContent <- content(s, as = "parsed")
+            pmTitles <- lapply(pmContent, '[', "Title")
+            # combine into a single string
+            titleString <- paste(unlist(pmTitles), sep = '----', collapse = '__________')
+            list[dex,"Titles"]<- titleString
+            
+        }else if(list[dex,"pubmed.cancerGene"]>4){   
+            
+            pmid <- esearch(paste(i, "cancer", dateRange, sep=" AND "), retmax = 5, db = "pubmed", rettype = "uilist")
+            s <- esummary(uid(pmid), db = "pubmed")
+            pmContent <- content(s, as = "parsed")
+            pmTitles <- lapply(pmContent, '[', "Title")
+            # combine into a single string
+            titleString <- paste(unlist(pmTitles), sep = '----', collapse = '__________')
+            list[dex,"Titles"]<- titleString
+            
+        }else if(list[dex,"pubmed.gene"]>0){
+            pmid <- esearch(i, retmax = 5, db = "pubmed", rettype = "uilist")
+            s <- esummary(uid(pmid), db = "pubmed")
+            pmContent <- content(s, as = "parsed")
+            pmTitles <- lapply(pmContent, '[', "Title")
+            # combine into a single string
+            titleString <- paste(unlist(pmTitles), sep = '', collapse = '__________')
+            list[dex,"Titles"]<- titleString
+        }
+        
+    }
+
+
+
+    
+#Mandal Lab Computer
+#rbind(list,list(0,0,0,0))
+#write.table(rbind(list,list(0,0,0,0)), file="C:/Users/jwaldr/Downloads/entrezGeneSummary.csv", row.names=FALSE, quote=2, sep=",")
+#At home
+#write.table(list, file="C:/Users/Public/entrezGeneSummary.csv", row.names=FALSE, quote=c(2,6), sep=",")
+
+##################################################
+#
+# see relevant scripts to include annotation from OMIM and ENSEMBL 
+#
+##################################################
+
+#load mimToGene --> THIS FILE IS NOT NECESSARY - CAN ACCESS OMIM NUMBER FROM BIOMArT
+# I should upload this file to gitHub so that its easier to access
+mimToGene <- read.delim(file="C:/Users/4wald/Documents/R/mim2gene.csv", header=TRUE, )
