@@ -20,7 +20,7 @@ library(XML)
 #I've stored the gene list on github, so that it can be read from any computer without worrying about the file path. I think this will prove to be helpful in the future.
 # to get the path to the file once it is stored in a GitHub repository, click the file and the tab that says "raw". The URL for the "raw" file is the path to pass to r (fread in the data.table package works well.)
 
-list <- fread("https://raw.githubusercontent.com/johnbwaldron/genes/master/GENELIST_FOR_ANNOTATIONS.txt", col.names=c("genes"), header=FALSE)
+list <- fread("https://raw.githubusercontent.com/johnbwaldron/genes/master/103AAHPC_Gene_List-8.2.18.KT.tsv", col.names=c("genes"), header=FALSE)
 
 #esearch a database to acquire UIDs --> LIST DATABASES: einfo()
 for(i in list$genes){
@@ -84,7 +84,7 @@ for(i in list$genes){
 #rbind(list,list(0,0,0,0))
 #write.table(rbind(list,list(0,0,0,0)), file="C:/Users/jwaldr/Downloads/entrezGeneSummary.csv", row.names=FALSE, quote=2, sep=",")
 #At home
-#write.table(list, file="C:/Users/Public/entrezGeneSummary.csv", row.names=FALSE, quote=c(2,6), sep=",")
+write.table(list, file="C:/Users/Public/entrezGeneSummary.csv", row.names=FALSE, quote=c(2,6), sep=",")
 
 ##################################################
 #
