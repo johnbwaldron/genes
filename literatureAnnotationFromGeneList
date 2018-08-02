@@ -6,7 +6,7 @@
  # source(file="address")
 
 library("reutils")
-library("data.table")
+#library("data.table") # seems troublesome
 library("biomaRt")
 library(XML)
 
@@ -20,7 +20,8 @@ library(XML)
 #I've stored the gene list on github, so that it can be read from any computer without worrying about the file path. I think this will prove to be helpful in the future.
 # to get the path to the file once it is stored in a GitHub repository, click the file and the tab that says "raw". The URL for the "raw" file is the path to pass to r (fread in the data.table package works well.)
 
-list <- fread("https://raw.githubusercontent.com/johnbwaldron/genes/master/103AAHPC_Gene_List-8.2.18.KT.tsv", col.names=c("genes"), header=FALSE)
+list <- read.table(file="https://raw.githubusercontent.com/johnbwaldron/genes/master/103AAHPC_Gene_List-8.2.18.KT.tsv", col.names=c("genes"), colClasses = "character")
+#rownames(list) = list[,1]
 
 #esearch a database to acquire UIDs --> LIST DATABASES: einfo()
 for(i in list$genes){
