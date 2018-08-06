@@ -28,16 +28,17 @@ glist <- read.table(file="https://raw.githubusercontent.com/johnbwaldron/genes/m
 for(i in glist$genes){
     gid <- esearch(paste(paste(i,"[GENE]", sep=""), "human[ORGN]", sep=" AND "), db = "gene")
     s <- esummary(uid(gid), db = "gene")
-    if(is.list(content(s, "parsed"))){ 
-                  entrezGeneSummary <- content(s, "parsed")[[1]]$Summary
-                  entrezGeneSummary <- paste(entrezGeneSummary, collapse = "--")
-                  if("NA" %in% entrezGeneSummary){entrezGeneSummary <- content(s, "parsed")[[1]]$Description}
-    } else { 
+   
+   if(is.data.frame(content(s, "parsed"))){  
           entrezGeneSummary <- content(s, "parsed")$Summary 
           entrezGeneSummary <- paste(entrezGeneSummary, collapse = "--")
           if("NA" %in% entrezGeneSummary){entrezGeneSummary <- content(s, "parsed")$Description}# doesn't work with formatting for a number of the genes
-     }
-    dex = which(glist$genes==i)
+     } else {
+             entrezGeneSummary <- content(s, "parsed")[[1]]$Summary
+             entrezGeneSummary <- paste(entrezGeneSummary, collapse = "--")
+             if("NA" %in% entrezGeneSummary){entrezGeneSummary <- content(s, "parsed")[[1]]$Description}
+    }     
+        dex = which(glist$genes==i)
     glist[dex,"Summary"]<- entrezGeneSummary
     
     # pubmeds with gene 
