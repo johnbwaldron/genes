@@ -33,11 +33,11 @@ for(i in glist$genes){
           entrezGeneSummary <- content(s, "parsed")$Summary 
           entrezGeneSummary <- paste(entrezGeneSummary, collapse = "--")
           if("NA" %in% entrezGeneSummary){entrezGeneSummary <- content(s, "parsed")$Description}# doesn't work with formatting for a number of the genes
-     } else {
+     } else if (length(content(s, "parsed"))>0){
              entrezGeneSummary <- content(s, "parsed")[[1]]$Summary
              entrezGeneSummary <- paste(entrezGeneSummary, collapse = "--")
              if("NA" %in% entrezGeneSummary){entrezGeneSummary <- content(s, "parsed")[[1]]$Description}
-    }     
+    }   else {  entrezGeneSummary <- "gene not found in genbank"}
         dex = which(glist$genes==i)
     glist[dex,"Summary"]<- entrezGeneSummary
     
