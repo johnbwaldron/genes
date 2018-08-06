@@ -31,6 +31,10 @@ for(i in glist$genes){
     gid <- esearch(paste(paste(i,"[GENE]", sep=""), "human[ORGN]", sep=" AND "), db = "gene")
     s <- esummary(uid(gid), db = "gene")
    
+   ## try this means of parsing rather than all the acrobatics below?
+       ##entrezContent <- content(s, as = "parsed")
+       ##entrezSummary <- lapply(entrezContent, '[', "Summary")
+   
    if(is.data.frame(content(s, "parsed"))){  
           entrezGeneSummary <- content(s, "parsed")$Summary 
           entrezGeneSummary <- paste(entrezGeneSummary, collapse = "--")
@@ -68,14 +72,14 @@ for(i in glist$genes){
             titleString <- paste(unlist(pmTitles), sep = '----', collapse = '___')
             glist[dex,"Titles"]<- titleString
             
-        }else if(glist[dex,"pubmed.cancerGene"]>4){   
+        }else if(glist[dex,"pubmed.cancerGene"]>0){   
             
             pmid <- esearch(paste(i, "cancer", dateRange, sep=" AND "), retmax = 5, db = "pubmed", rettype = "uilist")
             s <- esummary(uid(pmid), db = "pubmed")
             pmContent <- content(s, as = "parsed")
             pmTitles <- lapply(pmContent, '[', "Title")
             # combine into a single string
-            titleString <- paste(unlist(pmTitles), sep = '----', collapse = '__________')
+            titleString <- paste(unlist(pmTitles), sep = '----', collapse = '___')
             glist[dex,"Titles"]<- titleString
             
         }else if(glist[dex,"pubmed.gene"]>0){
@@ -84,7 +88,7 @@ for(i in glist$genes){
             pmContent <- content(s, as = "parsed")
             pmTitles <- lapply(pmContent, '[', "Title")
             # combine into a single string
-            titleString <- paste(unlist(pmTitles), sep = '', collapse = '__________')
+            titleString <- paste(unlist(pmTitles), sep = '', collapse = '___')
             glist[dex,"Titles"]<- titleString
         }
         
@@ -107,4 +111,4 @@ write.table(glist, file="C:/Users/Public/entrezGeneSummary.csv", row.names=FALSE
 
 #load mimToGene --> THIS FILE IS NOT NECESSARY - CAN ACCESS OMIM NUMBER FROM BIOMArT
 # I should upload this file to gitHub so that its easier to access
-mimToGene <- read.delim(file="C:/Users/4wald/Documents/R/mim2gene.csv", header=TRUE, )
+# mimToGene <- read.delim(file="C:/Users/4wald/Documents/R/mim2gene.csv", header=TRUE, )
