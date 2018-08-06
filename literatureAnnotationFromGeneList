@@ -1,4 +1,5 @@
  #Rterm.exe --vanilla
+ # source("https://raw.githubusercontent.com/johnbwaldron/genes/master/literatureAnnotationFromGeneList")
  #install.packages("reutils") ?????????
  #install.packages("data.table")
  #install.packages("RCurl")
@@ -27,7 +28,7 @@ glist <- read.table(file="https://raw.githubusercontent.com/johnbwaldron/genes/m
 for(i in glist$genes){
     gid <- esearch(paste(paste(i,"[GENE]", sep=""), "human[ORGN]", sep=" AND "), db = "gene")
     s <- esummary(uid(gid), db = "gene")
-    entrezGeneSummary <- content(s, "parsed")$Summary
+    entrezGeneSummary <- content(s, "parsed")$Summary # doesn't work with formatting for a number of the genes
     entrezGeneSummary <- paste(entrezGeneSummary, collapse = "--")
     if("NA" %in% entrezGeneSummary){entrezGeneSummary <- content(s, "parsed")$Description}
     dex = which(glist$genes==i)
