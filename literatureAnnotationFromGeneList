@@ -28,6 +28,8 @@ for(i in glist$genes){
     gid <- esearch(paste(paste(i,"[GENE]", sep=""), "human[ORGN]", sep=" AND "), db = "gene")
     s <- esummary(uid(gid), db = "gene")
     entrezGeneSummary <- content(s, "parsed")$Summary
+    entrezGeneSummary <- paste(entrezGeneSummary, collapse = "--")
+    if(NA %in% entrezGeneSummary){entrezGeneSummary <- content(s, "parsed")$Description}
     dex = which(glist$genes==i)
     glist[dex,"Summary"]<- entrezGeneSummary
     
@@ -53,7 +55,7 @@ for(i in glist$genes){
             pmContent <- content(s, as = "parsed")
             pmTitles <- lapply(pmContent, '[', "Title")
             # combine into a single string
-            titleString <- paste(unlist(pmTitles), sep = '----', collapse = '__________')
+            titleString <- paste(unlist(pmTitles), sep = '----', collapse = '___')
             glist[dex,"Titles"]<- titleString
             
         }else if(glist[dex,"pubmed.cancerGene"]>4){   
