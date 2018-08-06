@@ -29,7 +29,7 @@ for(i in glist$genes){
     s <- esummary(uid(gid), db = "gene")
     entrezGeneSummary <- content(s, "parsed")$Summary
     entrezGeneSummary <- paste(entrezGeneSummary, collapse = "--")
-    if(NA %in% entrezGeneSummary){entrezGeneSummary <- content(s, "parsed")$Description}
+    if("NA" %in% entrezGeneSummary){entrezGeneSummary <- content(s, "parsed")$Description}
     dex = which(glist$genes==i)
     glist[dex,"Summary"]<- entrezGeneSummary
     
