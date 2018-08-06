@@ -3,6 +3,8 @@
  #install.packages("reutils") ?????????
  #install.packages("data.table")
  #install.packages("RCurl")
+ #source("https://bioconductor.org/biocLite.R")
+ #biocLite("biomaRt")
  # I've chosen to use reutils because it appears to actually be available
  # source(file="address")
 
