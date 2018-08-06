@@ -20,43 +20,43 @@ library(XML)
 #I've stored the gene list on github, so that it can be read from any computer without worrying about the file path. I think this will prove to be helpful in the future.
 # to get the path to the file once it is stored in a GitHub repository, click the file and the tab that says "raw". The URL for the "raw" file is the path to pass to r (fread in the data.table package works well.)
 
-list <- read.table(file="https://raw.githubusercontent.com/johnbwaldron/genes/master/103AAHPC_Gene_List-8.2.18.KT.tsv", col.names=c("genes"), colClasses = "character")
+glist <- read.table(file="https://raw.githubusercontent.com/johnbwaldron/genes/master/103AAHPC_Gene_List-8.2.18.KT.tsv", col.names=c("genes"), colClasses = "character")
 #rownames(list) = list[,1]
 
 #esearch a database to acquire UIDs --> LIST DATABASES: einfo()
-for(i in list$genes){
+for(i in glist$genes){
     gid <- esearch(paste(paste(i,"[GENE]", sep=""), "human[ORGN]", sep=" AND "), db = "gene")
     s <- esummary(uid(gid), db = "gene")
     entrezGeneSummary <- content(s, "parsed")$Summary
-    dex = which(list$genes==i)
-    list[dex,"Summary"]<- entrezGeneSummary
+    dex = which(glist$genes==i)
+    glist[dex,"Summary"]<- entrezGeneSummary
     
     # pubmeds with gene 
         numb <- esearch(i, db = "pubmed", rettype = "count", field = NULL)
-        list[dex,"pubmed.gene"] <- content(numb, "parsed")
+        glist[dex,"pubmed.gene"] <- content(numb, "parsed")
     
     # pubmeds with gene AND cancer
         numb <- esearch(paste(i, "cancer", sep=" AND "), db = "pubmed", rettype = "count")   
-        list[dex,"pubmed.cancerGene"] <- content(numb, "parsed")
+        glist[dex,"pubmed.cancerGene"] <- content(numb, "parsed")
         
     # pubmeds with gene AND cancer AND prostate
         numb <- esearch(paste(i, "cancer", "(prostate OR prostatic)", sep=" AND "), db = "pubmed", rettype = "count")
-        list[dex,"pubmed.prostateCancerGene"] <- content(numb, "parsed")
+        glist[dex,"pubmed.prostateCancerGene"] <- content(numb, "parsed")
     
     # NOW ADD TITLES FROM PUBMED FOR prostateCancerGene or then geneCancer or then gene IF > 0
         # search query format: (GSTM1) AND cancer AND ("2018"[Date - Publication] : "3000"[Date - Publication]) 
         #dateRange = paste('(2017[Date - Publication] : 3000[Date - Publication])')
             dateRange = ""
-        if(list[dex,"pubmed.prostateCancerGene"]>1){   
+        if(glist[dex,"pubmed.prostateCancerGene"]>1){   
            pmid <- esearch(paste(i, "cancer", "(prostate OR prostatic)", dateRange, sep=" AND "), retmax = 5, db = "pubmed", rettype = "uilist")
             s <- esummary(uid(pmid), db = "pubmed")
             pmContent <- content(s, as = "parsed")
             pmTitles <- lapply(pmContent, '[', "Title")
             # combine into a single string
             titleString <- paste(unlist(pmTitles), sep = '----', collapse = '__________')
-            list[dex,"Titles"]<- titleString
+            glist[dex,"Titles"]<- titleString
             
-        }else if(list[dex,"pubmed.cancerGene"]>4){   
+        }else if(glist[dex,"pubmed.cancerGene"]>4){   
             
             pmid <- esearch(paste(i, "cancer", dateRange, sep=" AND "), retmax = 5, db = "pubmed", rettype = "uilist")
             s <- esummary(uid(pmid), db = "pubmed")
@@ -64,16 +64,16 @@ for(i in list$genes){
             pmTitles <- lapply(pmContent, '[', "Title")
             # combine into a single string
             titleString <- paste(unlist(pmTitles), sep = '----', collapse = '__________')
-            list[dex,"Titles"]<- titleString
+            glist[dex,"Titles"]<- titleString
             
-        }else if(list[dex,"pubmed.gene"]>0){
+        }else if(glist[dex,"pubmed.gene"]>0){
             pmid <- esearch(i, retmax = 5, db = "pubmed", rettype = "uilist")
             s <- esummary(uid(pmid), db = "pubmed")
             pmContent <- content(s, as = "parsed")
             pmTitles <- lapply(pmContent, '[', "Title")
             # combine into a single string
             titleString <- paste(unlist(pmTitles), sep = '', collapse = '__________')
-            list[dex,"Titles"]<- titleString
+            glist[dex,"Titles"]<- titleString
         }
         
     }
@@ -85,7 +85,7 @@ for(i in list$genes){
 #rbind(list,list(0,0,0,0))
 #write.table(rbind(list,list(0,0,0,0)), file="C:/Users/jwaldr/Downloads/entrezGeneSummary.csv", row.names=FALSE, quote=2, sep=",")
 #At home
-write.table(list, file="C:/Users/Public/entrezGeneSummary.csv", row.names=FALSE, quote=c(2,6), sep=",")
+write.table(glist, file="C:/Users/Public/entrezGeneSummary.csv", row.names=FALSE, quote=c(2,6), sep=",")
 
 ##################################################
 #
