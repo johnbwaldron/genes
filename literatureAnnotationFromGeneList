@@ -8,7 +8,7 @@
 
 library("reutils")
 #library("data.table") # seems troublesome
-library("biomaRt")
+#library("biomaRt")
 library(XML)
 
 #OMIM API Key: VkZb22y6QemoVVICZtmiCQ
