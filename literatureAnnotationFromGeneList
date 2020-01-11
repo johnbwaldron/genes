@@ -3,7 +3,11 @@
  #install.packages("reutils") ?????????
  #install.packages("data.table")
  #install.packages("RCurl")
- #source("https://bioconductor.org/biocLite.R")
+ #For the latest version of bioconductor:
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#   install.packages("BiocManager")
+#BiocManager::install(version = "3.10")
+
  #biocLite("biomaRt")
  # I've chosen to use reutils because it appears to actually be available
  # source(file="address")
