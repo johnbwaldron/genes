@@ -29,6 +29,9 @@ library(XML)
 
 glist <- read.table(file="https://raw.githubusercontent.com/johnbwaldron/genes/master/103AAHPC_Gene_List-8.2.18.KT.tsv", col.names=c("genes"), colClasses = "character")
 #rownames(list) = list[,1]
+# list below run on 1/19/2020 for Kirsten and Dr. Mandal's AA paper
+#glist <- read.table(file="https://raw.githubusercontent.com/johnbwaldron/genes/master/geneListFromMasterGATKresults103Samples", col.names=c("genes"), colClasses = "character")
+
 
 #esearch a database to acquire UIDs --> LIST DATABASES: einfo()
 for(i in glist$genes){
@@ -54,11 +57,15 @@ for(i in glist$genes){
     # pubmeds with gene 
         numb <- esearch(i, db = "pubmed", rettype = "count", field = NULL)
         glist[dex,"pubmed.gene"] <- content(numb, "parsed")
-    
+    Sys.sleep(.5)
     # pubmeds with gene AND cancer
         numb <- esearch(paste(i, "cancer", sep=" AND "), db = "pubmed", rettype = "count")   
         glist[dex,"pubmed.cancerGene"] <- content(numb, "parsed")
         
+       #keep getting "Warning: HTTP error: Status 429; Too Many Requests" b/c NCBI limits to 3 requests/s (10 with API key, see above)
+       # short cut: have R stop for a second every three requests (esearch)
+        Sys.sleep(1)
+       
     # pubmeds with gene AND cancer AND prostate
         numb <- esearch(paste(i, "cancer", "(prostate OR prostatic)", sep=" AND "), db = "pubmed", rettype = "count")
         glist[dex,"pubmed.prostateCancerGene"] <- content(numb, "parsed")
@@ -95,7 +102,7 @@ for(i in glist$genes){
             titleString <- paste(unlist(pmTitles), sep = '', collapse = '___')
             glist[dex,"Titles"]<- titleString
         }
-        
+        Sys.sleep(1)
     }
 
 
