@@ -23,20 +23,45 @@ cnv <- data.frame("sample"= df$SAMPLE, "chr"= sapply(loc, "[", 2), "start" = as.
 
 cnvGranges <- makeGRangesFromDataFrame(cnv, keep.extra.columns=TRUE, seqnames.field = "chr")
 
+geneRanges <- 
+    function(db, column="ENTREZID")
+{
+    g <- genes(db, columns=column)
+    col <- mcols(g)[[column]]
+    genes <- granges(g)[rep(seq_along(g), elementNROWS(col))]
+    mcols(genes)[[column]] <- as.character(unlist(col))
+    genes
+}
+
+gns = geneRanges(Homo.sapiens, column="SYMBOL")
+
+
+####################################################################################################
+#Find overlap
+
+splitByOverlap <-
+    function(query, subject, column="ENTREZID", ...)
+{
+    olaps <- findOverlaps(query, subject, ...)
+    f1 <- factor(subjectHits(olaps),
+                 levels=seq_len(subjectLength(olaps)))
+    splitAsList(mcols(query)[[column]][queryHits(olaps)], f1)
+}
+
+symInCnv = splitByOverlap(gns, cnvGranges, "SYMBOL")
 
 #?g <- genes(Homo.sapiens, column="ENTREZID")
-g <- genes(Homo.sapiens, column="SYMBOL")
+#laps <- findOverlaps(g, cnvGranges)
+#fa <- factor(subjectHits(laps), levels=seq_len(subjectLength(laps)))
+#answer <- splitAsList(mcols(g)[["SYMBOL"]][queryHits(laps)], fa)
 
-# I don't think the following three lines are necessary. There appear to be 23056 symbols corresponding to 23056 ranges 
-#col <- mcols(g)[["SYMBOL"]]
-#genes <- granges(g)#[rep(seq_along(g), elementLengths(col))]
-#mcols(genes)[["SYMBOL"]] <- as.character(unlist(col))
+cnv$gene <- NA
 
-laps <- findOverlaps(g, cnvGranges)
+for(i in 1:nrow(cnv)){
+cat("cnv #", i, " covers ", paste(symInCnv[[i]], collapse=", "), "\n")
+cnv$gene[i] <- paste(symInCnv[[i]], collapse=", ")
+}
 
-fa <- factor(subjectHits(laps), levels=seq_len(subjectLength(laps)))
-
-answer <- splitAsList(mcols(g)[["SYMBOL"]][queryHits(laps)], fa)
 
 
 #maybe use annotatr instead
