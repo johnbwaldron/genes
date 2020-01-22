@@ -62,7 +62,7 @@ cat("cnv #", i, " covers ", paste(symInCnv[[i]], collapse=", "), "\n")
 cnv$gene[i] <- paste(symInCnv[[i]], collapse=", ")
 }
 
-
+write.table(cnv, file="C:/Users/jwaldr/OneDrive - LSUHSC/prostateCancerGATKResults/cnvWithSymbol.csv", row.names=FALSE, sep=",") #quote=c(1:3)???
 
 #maybe use annotatr instead
 if (!requireNamespace("BiocManager", quietly=TRUE))
