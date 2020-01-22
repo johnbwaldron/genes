@@ -1,28 +1,10 @@
 #Rterm.exe --vanilla
-# source("https://raw.githubusercontent.com/johnbwaldron/genes/master/literatureAnnotationFromGeneList")
+# source("https://raw.githubusercontent.com/johnbwaldron/genes/master/convertGenomicRangeToGeneName")
 # look here for ideas: https://support.bioconductor.org/p/67118/
 
 library("reutils")
 library(Homo.sapiens)
 
-geneRanges <- 
-    function(db, column="ENTREZID")
-{
-    g <- genes(db, columns=column)
-    col <- mcols(g)[[column]]
-    genes <- granges(g)[rep(seq_along(g), elementLengths(col))]
-    mcols(genes)[[column]] <- as.character(unlist(col))
-    genes
-}
-
-splitColumnByOverlap <-
-    function(query, subject, column="ENTREZID", ...)
-{
-    olaps <- findOverlaps(query, subject, ...)
-    f1 <- factor(subjectHits(olaps),
-                 levels=seq_len(subjectLength(olaps)))
-    splitAsList(mcols(query)[[column]][queryHits(olaps)], f1)
-}
 
 # note: in the GATK output, the following is very important: 
 #  "GT of 0 indicates normal ploidy, 1 indicates deletion and 2 denotes duplication. 
@@ -30,12 +12,31 @@ splitColumnByOverlap <-
 # information on GATK output: https://gatk.broadinstitute.org/hc/en-us/articles/360035531152--How-to-Call-common-and-rare-germline-copy-number-variants#5
 df <- read.delim(file="C:/Users/jwaldr/OneDrive - LSUHSC/prostateCancerGATKResults/GATK_Results_203_LA_HPC_Samples.txt", colClasses = "character")
 
+#remove empty rows and NA
+df <- df[-which(df$SAMPLE == "" | df$SAMPLE == "SAMPLE"),]
+
 #create new dataframe with the following columns for each sample: sample, chr, start, end, del_1.dup_2, copyNum
 loc <- strsplit(df[,"ID"], "_")
 mut <- strsplit(df[,"X"], ":")
 
-cnv <- data.frame("sample"= df$SAMPLE, "chr"= sapply(loc, "[", 2), "start" = sapply(loc, "[", 3), "end" = sapply(loc, "[", 4), "del_1.dup_2" = sapply(mut, "[", 1), "copyNum" = sapply(mut, "[", 2))
+cnv <- data.frame("sample"= df$SAMPLE, "chr"= sapply(loc, "[", 2), "start" = as.numeric(sapply(loc, "[", 3)), "end" = as.numeric(sapply(loc, "[", 4)), "del_1.dup_2" = sapply(mut, "[", 1), "copyNum" = sapply(mut, "[", 2))
 
-colnames(df)
+cnvGranges <- makeGRangesFromDataFrame(cnv, keep.extra.columns=TRUE, seqnames.field = "chr")
 
 
+#?g <- genes(Homo.sapiens, column="ENTREZID")
+g <- genes(Homo.sapiens, column="SYMBOL")
+
+# I don't think the following three lines are necessary. There appear to be 23056 symbols corresponding to 23056 ranges 
+#col <- mcols(g)[["SYMBOL"]]
+#genes <- granges(g)#[rep(seq_along(g), elementLengths(col))]
+#mcols(genes)[["SYMBOL"]] <- as.character(unlist(col))
+
+laps <- findOverlaps(g, cnvGranges)
+
+fa <- factor(subjectHits(laps), levels=seq_len(subjectLength(laps)))
+
+answer <- splitAsList(mcols(g)[["SYMBOL"]][queryHits(laps)], fa)
+
+
+#maybe use annotatr instead
