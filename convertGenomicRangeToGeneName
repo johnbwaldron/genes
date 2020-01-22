@@ -43,3 +43,6 @@ answer <- splitAsList(mcols(g)[["SYMBOL"]][queryHits(laps)], fa)
 if (!requireNamespace("BiocManager", quietly=TRUE))
     install.packages("BiocManager")
 BiocManager::install("annotatr")
+
+library("annotatr")
+# help: https://bioconductor.org/packages/release/bioc/vignettes/annotatr/inst/doc/annotatr-vignette.html
