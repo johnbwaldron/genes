@@ -31,10 +31,11 @@ splitColumnByOverlap <-
 df <- read.delim(file="C:/Users/jwaldr/OneDrive - LSUHSC/prostateCancerGATKResults/GATK_Results_203_LA_HPC_Samples.txt", colClasses = "character")
 
 #create new dataframe with the following columns for each sample: sample, chr, start, end, del_1.dup_2, copyNum
-splt <- strsplit(df[,"ID"], "_")
-# trial: sapply(splt[c(1:5)], "[", 3)
-cnv <- data.frame("sample"= df$SAMPLE, "chr"= sapply(splt, "[", 2), "start" = sapply(splt, "[", 3), "end" = sapply(splt, "[", 4), "del_1.dup_2", "copyNum")
-colnames(cnv)<-c("sample", "chr", "start", "end", "del_1.dup_2", "copyNum")
+loc <- strsplit(df[,"ID"], "_")
+mut <- strsplit(df[,"X"], ":")
+
+cnv <- data.frame("sample"= df$SAMPLE, "chr"= sapply(loc, "[", 2), "start" = sapply(loc, "[", 3), "end" = sapply(loc, "[", 4), "del_1.dup_2" = sapply(mut, "[", 1), "copyNum" = sapply(mut, "[", 2))
+
 colnames(df)
 
 
