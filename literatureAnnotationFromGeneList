@@ -31,6 +31,9 @@ glist <- read.table(file="https://raw.githubusercontent.com/johnbwaldron/genes/m
 #rownames(list) = list[,1]
 # list below run on 1/19/2020 for Kirsten and Dr. Mandal's AA paper
 #glist <- read.table(file="https://raw.githubusercontent.com/johnbwaldron/genes/master/geneListFromMasterGATKresults103Samples", col.names=c("genes"), colClasses = "character")
+#9/21/21
+# load(file = "C:/Users/jwaldr/OneDrive - LSUHSC/GELCC/cumgFamily.rda")
+glist <- data.frame(genes = unique(cumgFamily$gene))
 
 
 #esearch a database to acquire UIDs --> LIST DATABASES: einfo()
